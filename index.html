@@ -14,7 +14,7 @@
         button{flex:1;padding:10px;border:0;border-radius:6px;cursor:pointer}
         button.calc{background:#2563eb;color:white}
         button.reset{background:#e6eef8}
-        .result{margin-top:14px;padding:10px;border-radius:6px;background:#f3f6fb;font-weight:600;text-align:center}
+        .result{margin-top:14px;padding:10px;border-radius:6px;background:#f3f6fb;font-weight:600;text-align:center;white-space:pre-line}
         .muted{font-size:13px;color:#666;margin-top:6px;text-align:center}
     </style>
 </head>
@@ -64,8 +64,26 @@
             const bmi = w / (heightM * heightM);
             const bmiRounded = Math.round(bmi * 10) / 10;
             const cat = bmiCategory(bmi);
+
+            // 計算正常範圍對應的體重（以 BMI 18.5 - 25 為標準範圍）
+            const minNormalW = 18.5 * heightM * heightM;
+            const maxNormalW = 25 * heightM * heightM;
+            const minWRounded = Math.round(minNormalW * 10) / 10;
+            const maxWRounded = Math.round(maxNormalW * 10) / 10;
+
+            let advice = '';
+            if(w > maxNormalW){
+                const needLose = Math.round((w - maxNormalW) * 10) / 10;
+                advice = `建議減少 ${needLose} kg（降至 ${maxWRounded} kg，BMI=${Math.round(25*10)/10} 的上限即可屬於正常）`;
+            } else if (w < minNormalW){
+                const needGain = Math.round((minNormalW - w) * 10) / 10;
+                advice = `建議增加 ${needGain} kg（達到 ${minWRounded} kg，BMI=${Math.round(18.5*10)/10} 的下限即可屬於正常）`;
+            } else {
+                advice = `目前體重在正常範圍（${minWRounded} - ${maxWRounded} kg）。恭喜，符合合格標準，請繼續保持健康習慣！`;
+            }
+
             output.style.display = 'block';
-            output.textContent = `您的 BMI：${bmiRounded} — ${cat}`;
+            output.textContent = `您的 BMI：${bmiRounded} — ${cat}\n${advice}`;
         }
 
         calcBtn.addEventListener('click', calculateBMI);
